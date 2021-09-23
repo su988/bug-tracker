@@ -64,15 +64,15 @@ model Bug {
   createdBy User @relation("createdByUser", fields: [createdById], references: [id])
   createdById Int
   createdAt DateTime @default(now())
-  closedBy User @relation("closedByUser", fields: [closedById], references: [id])
-  closedById Int
-  closedAt DateTime @default(now())
-  reopendedBy User @relation("reopenedByUser", fields: [reopenedById], references: [id])
-  reopenedById Int
-  reopenedAt DateTime @default(now())
-  updatedBy User @relation("updatedByUser", fields: [updatedById], references: [id])
-  updatedById Int
-  updatedAt DateTime @default(now())
+  closedBy User? @relation("closedByUser", fields: [closedById], references: [id])
+  closedById Int?
+  closedAt DateTime? @default(now())
+  reopendedBy User? @relation("reopenedByUser", fields: [reopenedById], references: [id])
+  reopenedById Int?
+  reopenedAt DateTime? @default(now())
+  updatedBy User? @relation("updatedByUser", fields: [updatedById], references: [id])
+  updatedById Int?
+  updatedAt DateTime? @default(now())
 }
 
 model Note {
