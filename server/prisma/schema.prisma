@@ -1,0 +1,88 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  @@map(name: "users")
+  id Int @default(autoincrement()) @id
+  username String @db.VarChar(255) @unique
+  password String @db.VarChar(255) 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  projects Project[]
+  members Member[]
+  bugCreated Bug[] @relation("createdByUser")
+  bugClosed Bug[] @relation("closedByUser")
+  bugReopened Bug[] @relation("reopenedByUser")
+  bugUpdated Bug[] @relation("updatedByUser")
+  notes Note[]
+}
+
+model Project {
+  @@map(name: "projects")
+  id Int @default(autoincrement()) @id
+  name String @db.VarChar(60) @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  owner   User @relation(fields: [ownerId], references: [id])
+  ownerId Int
+  members Member[]
+  bugs Bug[]
+}
+
+model Member {
+  @@map(name: "members")
+  id Int @default(autoincrement()) @id
+  joinedAt DateTime @default(now())
+  project   Project @relation(fields: [projectId], references: [id])
+  projectId Int  
+  member User @relation(fields: [memberId], references: [id])
+  memberId Int
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model Bug {
+  @@map(name: "bugs")
+  id Int @default(autoincrement()) @id
+  title String @db.VarChar(60)
+  description String @db.VarChar(60)
+  priority Priority @default(LOW)
+  isResolved Boolean @default(false)
+  project   Project @relation(fields: [projectId], references: [id])
+  projectId Int
+  notes Note[]
+  createdBy User @relation("createdByUser", fields: [createdById], references: [id])
+  createdById Int
+  createdAt DateTime @default(now())
+  closedBy User @relation("closedByUser", fields: [closedById], references: [id])
+  closedById Int
+  closedAt DateTime @default(now())
+  reopendedBy User @relation("reopenedByUser", fields: [reopenedById], references: [id])
+  reopenedById Int
+  reopenedAt DateTime @default(now())
+  updatedBy User @relation("updatedByUser", fields: [updatedById], references: [id])
+  updatedById Int
+  updatedAt DateTime @default(now())
+}
+
+model Note {
+  @@map(name: "notes")
+  id Int @default(autoincrement()) @id
+  body String
+  author User @relation(fields: [authorId], references: [id])
+  authorId Int
+  bug Bug @relation(fields: [bugId], references: [id])
+  bugId Int
+}
+
+
