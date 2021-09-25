@@ -73,7 +73,9 @@ export const loginUser = async (req, res) => {
     return res.status(401).send({ message: 'Invalid credentials.' });
   }
 
-  const token = jwt.sign(user, JWT_SECRET, { expiresIn: '1h' });
+  const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, {
+    expiresIn: '1h',
+  });
 
   res.cookie('token', token, {
     httpOnly: true,
