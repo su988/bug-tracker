@@ -1,12 +1,8 @@
 import express, { json } from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import authRoutes from './src/routes/auth.js';
-
-dotenv.config();
-
-const { PORT } = process.env;
+import { PORT } from './src/utils/config.js';
 
 const app = express();
 
@@ -15,7 +11,7 @@ app.use(json());
 app.use(cookieParser());
 
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.send('Hello tanya!');
 });
 
 app.use('/', authRoutes);
