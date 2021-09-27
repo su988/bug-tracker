@@ -7,7 +7,7 @@ export const getAllUsers = async (req, res) => {
   const users = await prisma.user.findMany({
     where: {
       id: {
-        not: req.user,
+        not: req.userId,
       },
     },
     select: {

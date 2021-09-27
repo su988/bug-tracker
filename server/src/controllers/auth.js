@@ -2,7 +2,10 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import pkg from '@prisma/client';
 import { JWT_SECRET } from '../utils/config.js';
-import { registerValidation, loginValidation } from '../utils/validation.js';
+import {
+  registerValidation,
+  loginValidation,
+} from '../utils/validations/auth.js';
 
 const { PrismaClient } = pkg;
 
