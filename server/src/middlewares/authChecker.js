@@ -12,7 +12,7 @@ const authChecker = (req, res, next) => {
         .send({ message: 'Token verification failed. Authorization denied.' });
     }
 
-    req.user = user.id;
+    req.userId = user.id;
     next();
   } catch (error) {
     res.clearCookie('token');

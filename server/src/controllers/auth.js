@@ -1,12 +1,11 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import pkg from '@prisma/client';
 import { JWT_SECRET } from '../utils/config.js';
-import { registerValidation, loginValidation } from '../utils/validation.js';
-
-const { PrismaClient } = pkg;
-
-const prisma = new PrismaClient();
+import {
+  registerValidation,
+  loginValidation,
+} from '../utils/validations/auth.js';
+import { prisma } from '../utils/config.js';
 
 export const registerUser = async (req, res) => {
   const { username, password } = req.body;
