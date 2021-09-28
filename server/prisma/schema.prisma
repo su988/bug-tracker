@@ -43,6 +43,7 @@ model Member {
   projectId Int  
   member User @relation(fields: [memberId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   memberId Int
+  @@unique([projectId, memberId])
 }
 
 enum Priority {
@@ -73,6 +74,7 @@ model Bug {
   updatedBy User? @relation("updatedByUser", fields: [updatedById], references: [id])
   updatedById Int?
   updatedAt DateTime? @default(now())
+  
 }
 
 model Note {
