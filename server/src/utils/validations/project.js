@@ -8,7 +8,7 @@ export const checkProjectName = (name) => {
   }
 };
 
-const checkProjectMembers = (members) => {
+export const checkProjectMembers = (members) => {
   if (!Array.isArray(members)) {
     return 'Members field must be an array.';
   }

@@ -52,7 +52,7 @@ export const createProject = async (req, res) => {
     projectId: newProject.id,
   }));
 
-  const newMembers = await prisma.member.createMany({
+  await prisma.member.createMany({
     data: members,
   });
 
