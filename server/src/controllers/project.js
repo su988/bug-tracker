@@ -94,20 +94,31 @@ export const updateProjectName = async (req, res) => {
   res.send(updatedProject);
 };
 
+// ####################
+// delete selected project
+// ####################
 export const deleteProject = async (req, res) => {
   const { projectId } = req.params;
 
-  const selectedProject = await prisma.project.delete({
+  const selectedProject = await prisma.project.findUnique({
     where: {
       id: parseInt(projectId),
     },
   });
 
-  // if (!selectedProject) {
-  //   return res.status(404).send({ message: 'Invalid project ID.' });
-  // }
+  if (!selectedProject) {
+    return res.status(404).send({ message: 'Invalid project ID.' });
+  }
 
-  // if (selectedProject.ownerId !== req.userId) {
-  //   return res.status(401).send({ message: 'Access is denied.' });
-  // }
+  if (selectedProject.ownerId !== req.userId) {
+    return res.status(401).send({ message: 'Access is denied.' });
+  }
+
+  const deletedProject = await prisma.project.delete({
+    where: {
+      id: parseInt(projectId),
+    },
+  });
+
+  res.send('deleted');
 };

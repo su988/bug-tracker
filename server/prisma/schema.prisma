@@ -29,7 +29,7 @@ model Project {
   name String @db.VarChar(60) @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  owner   User @relation(fields: [ownerId], references: [id])
+  owner   User @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   ownerId Int
   members Member[]
   bugs Bug[]
@@ -39,9 +39,9 @@ model Member {
   @@map(name: "members")
   id Int @default(autoincrement()) @id
   joinedAt DateTime @default(now())
-  project   Project @relation(fields: [projectId], references: [id])
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   projectId Int  
-  member User @relation(fields: [memberId], references: [id])
+  member User @relation(fields: [memberId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   memberId Int
 }
 
@@ -58,7 +58,7 @@ model Bug {
   description String @db.VarChar(60)
   priority Priority @default(LOW)
   isResolved Boolean @default(false)
-  project   Project @relation(fields: [projectId], references: [id])
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   projectId Int
   notes Note[]
   createdBy User @relation("createdByUser", fields: [createdById], references: [id])
@@ -79,9 +79,9 @@ model Note {
   @@map(name: "notes")
   id Int @default(autoincrement()) @id
   body String
-  author User @relation(fields: [authorId], references: [id])
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   authorId Int
-  bug Bug @relation(fields: [bugId], references: [id])
+  bug Bug @relation(fields: [bugId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   bugId Int
 }
 
