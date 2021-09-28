@@ -33,6 +33,6 @@ export const createProjectValidation = (name, members) => {
 
   return {
     errors,
-    valid: Object.keys(error).length < 1,
+    valid: Object.keys(errors).length < 1,
   };
 };

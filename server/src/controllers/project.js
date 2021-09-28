@@ -1,15 +1,28 @@
-import pkg from '@prisma/client';
 import { createProjectValidation } from '../utils/validations/project.js';
+import { prisma } from '../utils/config.js';
 
-const { PrismaClient } = pkg;
-const prisma = new PrismaClient();
+export const getAllProjects = async (req, res) => {
+  const projects = await prisma.project.findMany({
+    where: {
+      members: {
+        some: {
+          memberId: req.userId,
+        },
+      },
+    },
+    include: {
+      members: true,
+      bugs: true,
+    },
+  });
 
-export const getAllProjects = async (req, res) => {};
+  res.json(projects);
+};
 
 export const createProject = async (req, res) => {
   const { name } = req.body;
   const membersIds = req.body.members
-    ? [re.userId, ...req.body.members]
+    ? [req.userId, ...req.body.members]
     : [req.userId];
 
   const { errors, valid } = createProjectValidation(name, membersIds);
@@ -27,12 +40,24 @@ export const createProject = async (req, res) => {
 
   const members = membersIds.map((memberId) => ({
     memberId: memberId,
-    ownerId: req.userId,
+    projectId: newProject.id,
   }));
 
-  const newMembers = prisma.member.createMany({
+  const newMembers = await prisma.member.createMany({
     data: members,
   });
+
+  const createdProject = await prisma.project.findUnique({
+    where: {
+      id: newProject.id,
+    },
+    include: {
+      members: true,
+      bugs: true,
+    },
+  });
+
+  return res.json(createdProject);
 };
 
 export const updateProject = async (req, res) => {};
