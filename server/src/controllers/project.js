@@ -1,6 +1,12 @@
-import { createProjectValidation } from '../utils/validations/project.js';
+import {
+  createProjectValidation,
+  checkProjectName,
+} from '../utils/validations/project.js';
 import { prisma } from '../utils/config.js';
 
+// ####################
+// get all projects where current user is a member
+// ####################
 export const getAllProjects = async (req, res) => {
   const projects = await prisma.project.findMany({
     where: {
@@ -19,6 +25,9 @@ export const getAllProjects = async (req, res) => {
   res.json(projects);
 };
 
+// ####################
+// create new project and add members to project
+// ####################
 export const createProject = async (req, res) => {
   const { name } = req.body;
   const membersIds = req.body.members
@@ -60,6 +69,45 @@ export const createProject = async (req, res) => {
   return res.json(createdProject);
 };
 
-export const updateProject = async (req, res) => {};
+// ####################
+// update selected project
+// ####################
+export const updateProjectName = async (req, res) => {
+  const { name } = req.body;
+  const { projectId } = req.params;
 
-export const deleteProject = async (req, res) => {};
+  const nameValidationError = checkProjectName(name);
+
+  if (nameValidationError) {
+    return res.status(400).send({ message: nameValidationError });
+  }
+
+  const updatedProject = await prisma.project.update({
+    where: {
+      id: parseInt(projectId),
+    },
+    data: {
+      name,
+    },
+  });
+
+  res.send(updatedProject);
+};
+
+export const deleteProject = async (req, res) => {
+  const { projectId } = req.params;
+
+  const selectedProject = await prisma.project.delete({
+    where: {
+      id: parseInt(projectId),
+    },
+  });
+
+  // if (!selectedProject) {
+  //   return res.status(404).send({ message: 'Invalid project ID.' });
+  // }
+
+  // if (selectedProject.ownerId !== req.userId) {
+  //   return res.status(401).send({ message: 'Access is denied.' });
+  // }
+};

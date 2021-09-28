@@ -4,14 +4,14 @@ import {
   createProject,
   deleteProject,
   getAllProjects,
-  updateProject,
+  updateProjectName,
 } from '../controllers/project.js';
 
 const router = express.Router();
 
 router.get('/', auth, getAllProjects);
 router.post('/', auth, createProject);
-router.put('/:projectId', auth, updateProject);
+router.put('/:projectId', auth, updateProjectName);
 router.delete('/:projectId', auth, deleteProject);
 
 export default router;

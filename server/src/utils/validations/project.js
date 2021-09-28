@@ -1,4 +1,4 @@
-const checkProjectName = (name) => {
+export const checkProjectName = (name) => {
   if (!name || name.trim() === '') {
     return 'Project name cannot be empty';
   }
