@@ -7,6 +7,7 @@ import userRoutes from './src/routes/user.js';
 import projectRoutes from './src/routes/project.js';
 import memberRoutes from './src/routes/members.js';
 import bugRoutes from './src/routes/bug.js';
+import noteRoutes from './src/routes/note.js';
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use('/users', userRoutes);
 app.use('/projects', projectRoutes);
 app.use('/projects', memberRoutes);
 app.use('/projects', bugRoutes);
+app.use('/projects', noteRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
