@@ -1,6 +1,9 @@
 import prisma from '../lib/prisma.js';
 import { checkBugValidation } from '../utils/validations/bug.js';
 
+// ####################
+// get all bugs for a project
+// ####################
 export const getBugs = async (req, res) => {
   const { projectId } = req.params;
 
@@ -10,10 +13,23 @@ export const getBugs = async (req, res) => {
     },
     include: {
       members: true,
-      bugs: true,
       bugs: {
         include: {
-          notes: true,
+          createdBy: {
+            select: {
+              username: true,
+            },
+          },
+          notes: {
+            select: {
+              body: true,
+              author: {
+                select: {
+                  username: true,
+                },
+              },
+            },
+          },
         },
       },
     },
@@ -37,6 +53,9 @@ export const getBugs = async (req, res) => {
   res.json(bugs);
 };
 
+// ####################
+// create bug for a project
+// ####################
 export const createBug = async (req, res) => {
   const { title, description, priority } = req.body;
   const { projectId } = req.params;
@@ -77,17 +96,112 @@ export const createBug = async (req, res) => {
       id: newBug.id,
     },
     include: {
-      notes: true,
+      createdBy: {
+        select: {
+          username: true,
+        },
+      },
+      notes: {
+        select: {
+          body: true,
+          author: true,
+        },
+      },
     },
   });
 
-  res.send(bug);
+  res.status(201).json(bug);
 };
 
-export const updateBug = async (req, res) => {};
+// ####################
+// update bug in a project
+// ####################
+export const updateBug = async (req, res) => {
+  const { title, description, priority } = req.body;
+  const { projectId, bugId } = req.params;
 
+  const { errors, valid } = checkBugValidation(title, description, priority);
+
+  if (!valid) {
+    return res.status(400).send({ error: Object.values(errors)[0] });
+  }
+
+  const projectMembers = await prisma.member.findMany({
+    where: {
+      projectId: parseInt(projectId),
+    },
+    select: {
+      memberId: true,
+    },
+  });
+
+  const memberIds = projectMembers.map((member) => member.memberId);
+
+  if (!memberIds.includes(req.userId)) {
+    return res.status(401).send({ message: 'Access is denied.' });
+  }
+
+  const selectedBug = await prisma.bug.findUnique({
+    where: {
+      id: parseInt(bugId),
+    },
+  });
+
+  if (!selectedBug) {
+    return res.status(400).send({ message: 'Invalid bug ID.' });
+  }
+
+  await prisma.bug.update({
+    where: {
+      id: parseInt(bugId),
+    },
+    data: {
+      title: title,
+      description: description,
+      priority: priority,
+      updatedById: req.userId,
+      updatedAt: new Date(),
+    },
+  });
+
+  const updatedBug = await prisma.bug.findUnique({
+    where: {
+      id: parseInt(bugId),
+    },
+    include: {
+      createdBy: {
+        select: {
+          username: true,
+        },
+      },
+      updatedBy: {
+        select: {
+          username: true,
+        },
+      },
+      notes: {
+        select: {
+          body: true,
+          author: true,
+        },
+      },
+    },
+  });
+
+  return res.status(201).json(updatedBug);
+};
+
+// ####################
+// delete bug in a project
+// ####################
 export const deleteBug = async (req, res) => {};
 
+// ####################
+// close bug in a project
+// ####################
 export const closeBug = async (req, res) => {};
 
+// ####################
+// reopen bug in a project
+// ####################
 export const reopenBug = async (req, res) => {};

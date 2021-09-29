@@ -1,6 +1,9 @@
 import prisma from '../lib/prisma.js';
 import { checkProjectMembers } from '../utils/validations/project.js';
 
+// ####################
+// add members to project
+// ####################
 export const addProjectMembers = async (req, res) => {
   const memberIds = req.body.members || [];
   const { projectId } = req.params;
@@ -64,6 +67,9 @@ export const addProjectMembers = async (req, res) => {
   res.send(updatedMembers);
 };
 
+// ####################
+// remove member from project
+// ####################
 export const removeProjectMember = async (req, res) => {
   const { projectId, memberId } = req.params;
 
@@ -112,6 +118,9 @@ export const removeProjectMember = async (req, res) => {
   res.status(204).end();
 };
 
+// ####################
+// leave project as a member
+// ####################
 export const leaveProjectAsMember = async (req, res) => {
   const { projectId } = req.params;
 
