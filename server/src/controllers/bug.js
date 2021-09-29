@@ -1,4 +1,5 @@
 import { prisma } from '../utils/config.js';
+import { checkBugValidation } from '../utils/validations/bug.js';
 
 export const getBugs = async (req, res) => {
   const { projectId } = req.params;
@@ -33,10 +34,54 @@ export const getBugs = async (req, res) => {
   const bugs = {};
   bugs.bugs = selectedProject.bugs;
 
-  res.send(bugs);
+  res.json(bugs);
 };
 
-export const createBug = async (req, res) => {};
+export const createBug = async (req, res) => {
+  const { title, description } = req.body;
+  const { projectId } = req.params;
+
+  const { errors, valid } = checkBugValidation(title, description);
+
+  if (!valid) {
+    return res.status(400).send({ message: Object.values(errors)[0] });
+  }
+
+  const projectMembers = await prisma.member.findMany({
+    where: {
+      projectId: parseInt(projectId),
+    },
+    select: {
+      memberId: true,
+    },
+  });
+
+  const memberIds = projectMembers.map((member) => member.memberId);
+
+  if (!memberIds.includes(req.userId)) {
+    return res.status(401).send({ message: 'Access is denied.' });
+  }
+
+  const newBug = await prisma.bug.create({
+    data: {
+      title,
+      description,
+      projectId: parseInt(projectId),
+      createdById: req.userId,
+    },
+  });
+
+  const bug = await prisma.bug.findUnique({
+    where: {
+      id: newBug.id,
+    },
+    include: {
+      notes: true,
+    },
+  });
+
+  res.send(bug);
+};
 
 export const updateBug = async (req, res) => {};
 
