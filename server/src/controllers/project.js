@@ -2,7 +2,7 @@ import {
   createProjectValidation,
   checkProjectName,
 } from '../utils/validations/project.js';
-import { prisma } from '../utils/config.js';
+import prisma from '../lib/prisma.js';
 
 // ####################
 // get all projects where current user is a member

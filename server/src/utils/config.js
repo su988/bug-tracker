@@ -1,8 +1,4 @@
 import dotenv from 'dotenv';
-import pkg from '@prisma/client';
-
-const { PrismaClient } = pkg;
-export const prisma = new PrismaClient();
 
 dotenv.config();
 

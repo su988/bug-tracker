@@ -5,7 +5,7 @@ import {
   registerValidation,
   loginValidation,
 } from '../utils/validations/auth.js';
-import { prisma } from '../utils/config.js';
+import prisma from '../lib/prisma.js';
 
 export const registerUser = async (req, res) => {
   const { username, password } = req.body;
