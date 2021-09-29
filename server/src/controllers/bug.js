@@ -1,4 +1,3 @@
-import { parse } from 'dotenv';
 import prisma from '../lib/prisma.js';
 import { checkBugValidation } from '../utils/validations/bug.js';
 
@@ -326,4 +325,86 @@ export const closeBug = async (req, res) => {
 // ####################
 // reopen bug in a project
 // ####################
-export const reopenBug = async (req, res) => {};
+export const reopenBug = async (req, res) => {
+  const { projectId, bugId } = req.params;
+
+  const selectedProject = await prisma.project.findUnique({
+    where: {
+      id: parseInt(projectId),
+    },
+    include: {
+      members: true,
+      bugs: {
+        where: {
+          id: parseInt(bugId),
+        },
+      },
+    },
+  });
+
+  const memberIds = selectedProject.members.map((member) => member.memberId);
+
+  if (!memberIds.includes(req.userId)) {
+    return res.status(401).send({ message: 'Access is denied.' });
+  }
+
+  if (selectedProject.bugs.length === 0) {
+    return res.status(400).send({ message: 'Invalid bug ID.' });
+  }
+
+  const selectedBug = await prisma.bug.findUnique({
+    where: {
+      id: parseInt(bugId),
+    },
+  });
+
+  if (!selectedBug.isResolved) {
+    return res.status(400).send({ message: 'Bug is already marked as open.' });
+  }
+
+  await prisma.bug.update({
+    where: {
+      id: parseInt(bugId),
+    },
+    data: {
+      isResolved: false,
+      closedById: req.userId,
+      closedAt: new Date(),
+      updatedById: req.userId,
+      updatedAt: new Date(),
+      reopenedById: null,
+      reopenedAt: null,
+    },
+  });
+
+  const updatedBug = await prisma.bug.findUnique({
+    where: {
+      id: parseInt(bugId),
+    },
+    include: {
+      createdBy: {
+        select: {
+          username: true,
+        },
+      },
+      closedBy: {
+        select: {
+          username: true,
+        },
+      },
+      updatedBy: {
+        select: {
+          username: true,
+        },
+      },
+      notes: {
+        select: {
+          body: true,
+          author: true,
+        },
+      },
+    },
+  });
+
+  res.send(updatedBug);
+};
