@@ -1,6 +1,6 @@
-export const checkBugValidation = (title, description) => {
+export const checkBugValidation = (title, description, priority) => {
   const errors = {};
-  const validPriorities = ['low', 'medium', 'high'];
+  const validPriorities = ['LOW', 'MEDIUM', 'HIGH'];
 
   if (!title || title.trim() === '' || title.length > 60 || title.length < 3) {
     errors.title = 'Title must be in range of 3-60 characters length.';
@@ -10,9 +10,9 @@ export const checkBugValidation = (title, description) => {
     errors.description = 'Description field must not be empty.';
   }
 
-  // if (!priority || !validPriorities.includes(priority)) {
-  //   errors.priority = 'Priority can only be - low, medium or high.';
-  // }
+  if (!priority || !validPriorities.includes(priority)) {
+    errors.priority = 'Priority can only be - low, medium or high.';
+  }
 
   return {
     errors,

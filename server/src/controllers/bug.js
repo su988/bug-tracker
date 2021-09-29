@@ -1,4 +1,4 @@
-import { prisma } from '../utils/config.js';
+import prisma from '../lib/prisma.js';
 import { checkBugValidation } from '../utils/validations/bug.js';
 
 export const getBugs = async (req, res) => {
@@ -38,10 +38,10 @@ export const getBugs = async (req, res) => {
 };
 
 export const createBug = async (req, res) => {
-  const { title, description } = req.body;
+  const { title, description, priority } = req.body;
   const { projectId } = req.params;
 
-  const { errors, valid } = checkBugValidation(title, description);
+  const { errors, valid } = checkBugValidation(title, description, priority);
 
   if (!valid) {
     return res.status(400).send({ message: Object.values(errors)[0] });
@@ -66,6 +66,7 @@ export const createBug = async (req, res) => {
     data: {
       title,
       description,
+      priority,
       projectId: parseInt(projectId),
       createdById: req.userId,
     },

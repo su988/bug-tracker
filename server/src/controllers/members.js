@@ -1,4 +1,4 @@
-import { prisma } from '../utils/config.js';
+import prisma from '../lib/prisma.js';
 import { checkProjectMembers } from '../utils/validations/project.js';
 
 export const addProjectMembers = async (req, res) => {
