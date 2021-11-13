@@ -15,3 +15,17 @@
 4. Any member can create bugs and notes.
 5. Project owner can update status of the bug - active / inactive.
 6. Project owner can delete bug.
+
+### Setup
+
+```console
+cd server
+
+npm install
+```
+
+```console
+- Update DATABASE_URL in .env file and run
+
+nodemon OR node app.js
+```
